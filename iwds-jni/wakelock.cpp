@@ -62,7 +62,7 @@ class ConnectWatchDog
 	ConnectWatchDog *~ConnectWatchDog(ConnectWatchDog *this)
 	{
 		requestExitAndWait((Thread*)this);
-		~Thread((Thread*)this);
+		del Thread((Thread*)this);
 		return this;
 	}
 }
