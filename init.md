@@ -9,13 +9,22 @@
 
 ## Sync of first time informations
 
+* Firstly it gets a "transporter" with the context, and "com.huami.watch.companion"
 * Apparently, there's two "modes", based on if the app/account was previously tied to the watch or not, they are called "OnRestore" and "OnNotRestore"
-* "Restore" seems to only sync the watchface configuration and the AGPS data
-* The information sent is apparently these, sent to "com.huami.watch.companion.transport.SyndData":
-* * UID (string)
-* * USER_OVERSEA (boolean)
-* * USER_MI_ID (string)
+* "OnRestore" seems to only sync the watchface configuration and the AGPS data
+* There's two "modes", depending if the bind was set with OnRestore or OnNotRestore
+* In the OnNotRestore case (first time binding this watch), it calls `ACTION_INITIAL_FINISH` ("com.huami.watch.companion.transport.InitialFinish") with the init data
+* If not, it will first send `ACTION_SYNC_DATA_START` ("com.huami.watch.companion.transport.SyncDataStart"), and then `ACTION_SYNC_DATA` ("com.huami.watch.companion.transport.SyndData") with the data
+* So, You have either `ACTION_SYNC_START` then `ACTION_SYNC_DATA` when you have OnRestore, or `ACTION_INITIAL_FINISH` when OnNotRestore, so it should be possible to init the watch with only the second one
+
+### Init data
+
+* * UID (string) 
+* * USER_OVERSEA (boolean, i guess it would enable NFC and the like)
+* * USER_MI_ID (string, note, the watch apparently can't check it given that at this point, it doesn't have wifi yet)
 * * USER_INFO (parcelable)
-* * EXTRA_INFO (string)
+* * EXTRA_INFO (json string, only contains `{"cmiitId"=2016DP4306"}`)
 * * USER_SETTINGS (json string)
 * * if "find", SPORT_ORDER (json string)
+* UID and MI_ID aren't the same, but both come from the same class, `Account` 
+
